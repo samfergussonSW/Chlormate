@@ -127,17 +127,17 @@ for i in selected_temperatures:
     Oxygen_formation_per_day[j] = Chlorate_formation_per_day[j]/8.3
 
 # """ now need to calculate the residual chlorates for each day"""
-big_df = pd.DataFrame(columns = ['Time','Temperature','NaOCl','Chlorate','Oxygen','Residual Chlorate (mg/L)','Residual Chlorate (ug/L)'])
+big_df = pd.DataFrame(columns = ['Time (days)','Temperature','NaOCl','Chlorate','Oxygen','Residual Chlorate (mg/L)','Residual Chlorate (ug/L)'])
 for i in selected_temperatures:
     j = str(i)
-    df = pd.DataFrame(selected_days, columns = ['Time'])
+    df = pd.DataFrame(selected_days, columns = ['Time (days)'])
     df['Temperature'] = i
-    df['NaOCl'] = ((hypo_content/(NaOCl_loss_per_day[j]*hypo_content*df['Time']+1))*
+    df['NaOCl'] = ((hypo_content/(NaOCl_loss_per_day[j]*hypo_content*df['Time (days)']+1))*
                    (constants['Molar mass of Cl2']/(specific_gravity*10)))
     df['Chlorate'] = ((chlorate_content_mol+Chlorate_formation_per_day[j]*
-                      ((hypo_content/(NaOCl_loss_per_day[j]*hypo_content*df['Time']+1)))**2*df['Time'])*
+                      ((hypo_content/(NaOCl_loss_per_day[j]*hypo_content*df['Time (days)']+1)))**2*df['Time (days)'])*
                       constants['Molar mass of ClO3'])
-    df['Oxygen'] = ((Oxygen_formation_per_day[j]*(hypo_content/(NaOCl_loss_per_day[j]*hypo_content*df['Time']+1))**2*df['Time'])
+    df['Oxygen'] = ((Oxygen_formation_per_day[j]*(hypo_content/(NaOCl_loss_per_day[j]*hypo_content*df['Time (days)']+1))**2*df['Time (days)'])
                      *constants['Volume of an ideal gas'])
     df['Residual Chlorate (mg/L)'] = (df['Chlorate']/(df['NaOCl']*10*specific_gravity)*selected_values['Applied dose of sodium hypochlorite (mg/L)']
     )
@@ -163,7 +163,7 @@ st.header(('Residual Chlorate Levels'), divider='gray')
 
 fig = px.line(
     big_df,
-    x="Time",
+    x="Time (days)",
     y="Residual Chlorate (ug/L)",
     color="Temperature",
     markers = True,
@@ -175,4 +175,4 @@ st.plotly_chart(fig, use_container_width=True)
 
 
 
-st.dataframe(big_df.sort_values(by = ['Time','Temperature'],ascending=True))
+st.dataframe(big_df.sort_values(by = ['Time (days)','Temperature'],ascending=True))
